@@ -1,8 +1,4 @@
-#! /bin/bash
-
-# Copyright (c) 2007 XenSource, Inc.
-#
-# This script installs or updates the XE support packages installed in a guest.
+#! /usr/bin/env sh
 
 # Core Variables
 os_distro=""
@@ -99,8 +95,7 @@ esac
 # Configuration Update Checks
 ##############################
 
-inittab_configuration_update_required()
-{
+inittab_configuration_update_required(){
   case "${os_distro}${os_majorver}" in
     sles10|"suse linux10"|sles11|"suse linux11")
       # SLES10 starts up two gettys, and we want to disable one of them

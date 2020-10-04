@@ -41,17 +41,20 @@ More to Come...
 - Ubuntu >= 16
 - Debian >= 8
 - Kali Rolling
+- ParrotOS
 
 ### RHL Based:
 - Fedora >= 28
 - Fedora CoreOS
 - CentOS >= 6
 - RHEL >= 6
+- ClearOS
+- Oracle Linux
 
 ### Suse Based:
 - Leap 15
 - TumbleWeed
-- SELS >= 10
+- SLES >= 10
 
 ### Arch Based:
 - Arch Linux
