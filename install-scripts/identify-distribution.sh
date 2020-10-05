@@ -13,7 +13,6 @@
 #    - Fedora CoreOS
 #    - CentOS 6-8
 #    - RHEL 6-8
-#    - ClearOS
 #    - Oracle Linux
 #
 #   Suse Based:
@@ -136,16 +135,10 @@ identify_rhl(){
       minor=$(cat /etc/centos-release | sed 's/"//g' | awk -F '[. ]' '{ print $5 }')
       patch=$(cat /etc/centos-release | sed 's/"//g' | awk -F '[. ]' '{ print $6 }')
 
-    elif $name == "ClearOS"; then
-      # Un-Tested
-      major='n/a'
-      minor='n/a'
-      patch='n/a'
-
     elif $name == "Oracle"; then
       # Un-Tested
-      major='n/a'
-      minor='n/a'
+      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION_ID=/ { print $2 }')
+      minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION_ID=/ { print $3 }')
       patch='n/a'
     
     elif $name == "RedHat"; then
