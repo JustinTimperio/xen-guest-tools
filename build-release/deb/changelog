@@ -1,5 +1,11 @@
-xe-guest-utilities (@VERSION@-@RELEASE@) etch; urgency=low
+xen-guest-tools (@VERSION@) stable; urgency=low
 
-  * Build for @PRODUCT_NAME@ @PRODUCT_VERSION@-@BUILD_NUMBER@.
+  * BUILD INFO: AutoBuilt For @DISTRO@
+  
+  * PATCH NOTES HERE
+  * PATCH NOTES HERE
+  * PATCH NOTES HERE
+  * PATCH NOTES HERE
+  * PATCH NOTES HERE
 
- -- @COMPANY_NAME_LEGAL@ <www.citrix.com>  @BUILD_DATE@
+ -- Justin Timperio  <justintimperio@gmail.com>  @BUILD_DATE@

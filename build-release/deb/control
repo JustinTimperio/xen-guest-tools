@@ -1,15 +1,15 @@
-Source: xe-guest-utilities
-Section: main/admin
+Source: xen-guest-tools
+Section: web
 Priority: optional
-Maintainer: Citrix Systems, Inc. <www.citrix.com>
+Maintainer: Justin Timperio
 Standards-Version: 3.7.2
 Build-Depends: debhelper (>= 4.0.0)
 
-Package: xe-guest-utilities
-Architecture: any
-Conflicts: xengmond
-Replaces: xengmond
-Description: @BRAND_GUEST@ Monitoring Scripts
- Scripts for monitoring @BRAND_GUESTS@.
- .
- Writes distribution version information and IP address to XenStore.
+Package: xen-guest-tools
+Architecture: amd64
+Conflicts: xengmond xe-guest-utilities
+Replaces: xengmond xe-guest-utilities
+Description:
+ A suite of tools for xen guests that enable various optimizations.
+ Allows the guest to communicate os-release information and IP address to XenStore.
+ Enables PV and PVHVM drivers on kernels that are not pre-compiled with virt drivers.

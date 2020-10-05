@@ -1,4 +1,4 @@
-#! /usr/bin/env sh
+#! /usr/bin/env bash
 
 # ======================================
 # Offically Supported and Tested Distros
@@ -42,8 +42,14 @@ print_output(){
 
 
 identify_pkg_manager(){
+  # SUSE Based
+  if [ -f "/usr/bin/zypper" ]; then
+    # Needs to be run first because Tumbleweed has
+    # both zypper and apt-rpm
+    pkg_manager="zypper"
+  
   # Deb Based
-  if [ -f "/usr/bin/apt" ] || [ -f "/bin/apt" ]; then
+  elif [ -f "/usr/bin/apt" ] || [ -f "/bin/apt" ]; then
     pkg_manager="apt"
 
   # RHL Based
@@ -104,7 +110,7 @@ identify_deb(){
       patch='n/a'
 
     else
-      # Un-Tested
+      # Tested
       major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=]' '/^VERSION_ID/ { print $2 }')
       minor='UNKNOWN'
       patch='UNKNOWN'
@@ -125,7 +131,7 @@ identify_rhl(){
     
     if [[ $name == "Fedora" ]]; then
       # Tested
-      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION=/ { print $2 }')
+      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^VERSION=/ { print $2 }')
       minor='n/a'
       patch='n/a'
     
@@ -136,7 +142,7 @@ identify_rhl(){
       patch=$(cat /etc/centos-release | sed 's/"//g' | awk -F '[. ]' '{ print $6 }')
 
     elif [[ $name == "Oracle" ]]; then
-      # Un-Tested
+      # Tested
       major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION_ID=/ { print $2 }')
       minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION_ID=/ { print $3 }')
       patch='n/a'
@@ -208,21 +214,21 @@ identify_freebsd(){
   # Tested
   kernel=$(uname -K)
   name=$(uname)
-  major=$(uname -r | awk -F '[.-]' "{print $1}")
-  minor=$(uname -r | awk -F '[.-]' "{print $2}")
-  patch=$(uname -r | awk -F '[.-]' "{print $4}")
+  major=$(uname -r | awk -F '[.-]' '{ print $1 }')
+  minor=$(uname -r | awk -F '[.-]' '{ print $2 }')
+  patch='n/a'
 }
 
 
 identify_alpine(){
-  kernel=$(uname -r | awk -F '[-]' '{print $1}')
+  kernel=$(uname -r | awk -F '[-]' '{ print $1 }')
   
   if [ -f "/etc/os-release" ]; then
     # Tested
     name=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^NAME=/ { print $2 }')
     major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $2 }')
     minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $3 }')
-    patch=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $4 }')
+    patch='n/a'
   
   else
     echo 'System is Based Alpine Linux But NO Release Info Was Found in "/etc/os-release"!'
@@ -247,11 +253,11 @@ elif [[ "$pkg_manager" == "zypper" ]]; then
   print_output
 
 elif [[ "$pkg_manager" == "pkg" ]]; then
-  identify_bsd
+  identify_freebsd
   print_output
 
 elif [[ "$pkg_manager" == "apk" ]]; then
-  identify_apline
+  identify_alpine
   print_output
 
 elif [[ "$pkg_manager" == "pacman" ]]; then
