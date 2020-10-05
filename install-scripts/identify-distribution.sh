@@ -79,25 +79,25 @@ identify_deb(){
   if [ -f "/etc/os-release" ]; then
     name=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^NAME=/ { print $2 }')
 
-    if $name == "Ubuntu"; then
+    if [[ $name == "Ubuntu" ]]; then
       # Tested
       major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION=/ { print $2 }')
       minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION=/ { print $3 }')
       patch=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION=/ { print $4 }')
 
-    elif $name == "Debian"; then
+    elif [[ $name == "Debian" ]]; then
       # Tested
       major=$(head -1 /etc/debian_version | sed 's/"//g' | awk -F '[=.]' '{ print $1 }')
       minor=$(head -1 /etc/debian_version | sed 's/"//g' | awk -F '[=.]' '{ print $2 }')
       patch='n/a'
 
-    elif $name == "Kali"; then
+    elif [[ $name == "Kali" ]]; then
       # Tested
       major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION=/ { print $2 }')
       minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION=/ { print $3 }')
       patch='n/a'
     
-    elif $name == "Parrot"; then
+    elif [[ $name == "Parrot" ]]; then
       # Un-Tested
       major='n/a'
       minor='n/a'
@@ -123,25 +123,25 @@ identify_rhl(){
   if [ -f "/etc/os-release" ]; then
     name=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^NAME=/ { print $2 }')
     
-    if $name == "Fedora"; then
+    if [[ $name == "Fedora" ]]; then
       # Tested
       major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION=/ { print $2 }')
       minor='n/a'
       patch='n/a'
     
-    elif $name == "CentOS"; then
+    elif [[ $name == "CentOS" ]]; then
       # Tested
       major=$(cat /etc/centos-release | sed 's/"//g' | awk -F '[. ]' '{ print $4 }')
       minor=$(cat /etc/centos-release | sed 's/"//g' | awk -F '[. ]' '{ print $5 }')
       patch=$(cat /etc/centos-release | sed 's/"//g' | awk -F '[. ]' '{ print $6 }')
 
-    elif $name == "Oracle"; then
+    elif [[ $name == "Oracle" ]]; then
       # Un-Tested
       major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION_ID=/ { print $2 }')
       minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION_ID=/ { print $3 }')
       patch='n/a'
     
-    elif $name == "RedHat"; then
+    elif [[ $name == "RedHat" ]]; then
       # Un-Tested
       major='n/a'
       minor='n/a'
@@ -161,19 +161,19 @@ identify_suse(){
   if [ -f "/etc/os-release" ]; then
     name=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^NAME=/ { print $3 }')
     
-    if $name == "Leap"; then
+    if [[ $name == "Leap" ]]; then
       # Tested
       major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $2 }')
       minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $3 }')
       patch='n/a'
 
-    elif $name == "Tumbleweed"; then
+    elif [[ $name == "Tumbleweed" ]]; then
       # Tested
       major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^VERSION_ID=/ { print $2 }' | rev | cut -c5- | rev)
       minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^VERSION_ID=/ { print $2 }' | cut -c5- | rev | cut -c3- | rev)
       patch=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^VERSION_ID=/ { print $2 }' | cut -c7-)
 
-    elif $name == "SLES"; then
+    elif [[ $name == "SLES" ]]; then
       # Un-Tested
       major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $2 }')
       minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $3 }')
