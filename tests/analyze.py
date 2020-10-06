@@ -85,6 +85,7 @@ def analyze(results_file, base_path):
 
 # Build Test Enviroment
 os.chdir('..')
+os.chdir('go-source')
 base_path = os.getcwd()
 test_path = tempfile.mkdtemp()
 results_file = test_path + '/results.json'

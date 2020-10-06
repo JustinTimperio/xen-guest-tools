@@ -1,5 +1,4 @@
 Source: xen-guest-tools
-Section: web
 Priority: optional
 Maintainer: Justin Timperio
 Standards-Version: 3.7.2
