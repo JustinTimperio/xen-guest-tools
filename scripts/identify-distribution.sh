@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env sh
 
 # ======================================
 # Offically Supported and Tested Distros
@@ -83,27 +83,27 @@ identify_deb(){
   kernel=$(uname -r | awk -F '[-]' '{print $1}')
   
   if [ -f "/etc/os-release" ]; then
-    name=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^NAME=/ { print $2 }')
+    name=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
 
-    if [[ $name == "Ubuntu" ]]; then
+    if [ $name = "Ubuntu" ]; then
       # Tested
-      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION=/ { print $2 }')
-      minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION=/ { print $3 }')
-      patch=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION=/ { print $4 }')
+      major=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+      minor=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
+      patch=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $4 }' /etc/os-release)
 
-    elif [[ $name == "Debian" ]]; then
+    elif [ $name = "Debian" ]; then
       # Tested
-      major=$(head -1 /etc/debian_version | sed 's/"//g' | awk -F '[=.]' '{ print $1 }')
-      minor=$(head -1 /etc/debian_version | sed 's/"//g' | awk -F '[=.]' '{ print $2 }')
+      major=$(head -1 /etc/debian_version | awk -F '[=.]' '{ gsub(/"/,""); print $1 }')
+      minor=$(head -1 /etc/debian_version | awk -F '[=.]' '{ gsub(/"/,""); print $2 }')
       patch='n/a'
 
-    elif [[ $name == "Kali" ]]; then
+    elif [ $name = "Kali" ]; then
       # Tested
-      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION=/ { print $2 }')
-      minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION=/ { print $3 }')
+      major=$(awk -F '[=.]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+      minor=$(awk -F '[=.]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
       patch='n/a'
     
-    elif [[ $name == "Parrot" ]]; then
+    elif [ $name = "Parrot" ]; then
       # Un-Tested
       major='n/a'
       minor='n/a'
@@ -111,7 +111,7 @@ identify_deb(){
 
     else
       # Tested
-      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=]' '/^VERSION_ID/ { print $2 }')
+      major=$(awk -F '[=]' '/^VERSION_ID/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       minor='UNKNOWN'
       patch='UNKNOWN'
     fi
@@ -127,27 +127,27 @@ identify_rhl(){
   kernel=$(uname -r | awk -F '[-]' '{print $1}')
   
   if [ -f "/etc/os-release" ]; then
-    name=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^NAME=/ { print $2 }')
+    name=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
     
-    if [[ $name == "Fedora" ]]; then
+    if [ $name = "Fedora" ]; then
       # Tested
-      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^VERSION=/ { print $2 }')
+      major=$(awk -F '[= ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       minor='n/a'
       patch='n/a'
     
-    elif [[ $name == "CentOS" ]]; then
+    elif [ $name = "CentOS" ]; then
       # Tested
-      major=$(cat /etc/centos-release | sed 's/"//g' | awk -F '[. ]' '{ print $4 }')
-      minor=$(cat /etc/centos-release | sed 's/"//g' | awk -F '[. ]' '{ print $5 }')
-      patch=$(cat /etc/centos-release | sed 's/"//g' | awk -F '[. ]' '{ print $6 }')
+      major=$(awk -F '[. ]' '{ gsub(/"/,""); print $4 }' /etc/centos-release)
+      minor=$(awk -F '[. ]' '{ gsub(/"/,""); print $5 }' /etc/centos-release)
+      patch=$(awk -F '[. ]' '{ gsub(/"/,""); print $6 }' /etc/centos-release)
 
-    elif [[ $name == "Oracle" ]]; then
+    elif [ $name = "Oracle" ]; then
       # Tested
-      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION_ID=/ { print $2 }')
-      minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=.]' '/^VERSION_ID=/ { print $3 }')
+      major=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+      minor=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
       patch='n/a'
     
-    elif [[ $name == "RedHat" ]]; then
+    elif [ $name = "RedHat" ]; then
       # Un-Tested
       major='n/a'
       minor='n/a'
@@ -165,24 +165,24 @@ identify_suse(){
   kernel=$(uname -r | awk -F '[-]' '{print $1}')
   
   if [ -f "/etc/os-release" ]; then
-    name=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^NAME=/ { print $3 }')
+    name=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
     
-    if [[ $name == "Leap" ]]; then
+    if [ $name = "Leap" ]; then
       # Tested
-      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $2 }')
-      minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $3 }')
+      major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+      minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
       patch='n/a'
 
-    elif [[ $name == "Tumbleweed" ]]; then
+    elif [ $name = "Tumbleweed" ]; then
       # Tested
-      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^VERSION_ID=/ { print $2 }' | rev | cut -c5- | rev)
-      minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^VERSION_ID=/ { print $2 }' | cut -c5- | rev | cut -c3- | rev)
-      patch=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^VERSION_ID=/ { print $2 }' | cut -c7-)
+      major=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release | rev | cut -c5- | rev)
+      minor=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release | cut -c5- | rev | cut -c3- | rev)
+      patch=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release | cut -c7-)
 
-    elif [[ $name == "SLES" ]]; then
+    elif [ $name = "SLES" ]; then
       # Un-Tested
-      major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $2 }')
-      minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $3 }')
+      major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+      minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
       patch='n/a'
     fi
   
@@ -198,10 +198,10 @@ identify_arch(){
   
   if [ -f "/etc/os-release" ]; then
     # Tested
-    name=$(cat /etc/os-release | sed -e 's/"//g' | awk -F '=' '/^NAME/ { print $2 }')
-    major=$(cat /etc/os-release | sed -e 's/"//g' | awk -F '=' '/^BUILD_ID/ { print $2 }')
-    minor=$(cat /etc/os-release | sed -e 's/"//g' | awk -F '=' '/^BUILD_ID/ { print $2 }')
-    patch=$(cat /etc/os-release | sed -e 's/"//g' | awk -F '=' '/^BUILD_ID/ { print $2 }')
+    name=$(awk -F '=' '/^NAME/ { gsub(/"/,""); print $2 }' /etc/os-release)
+    major=$(awk -F '=' '/^BUILD_ID/ { gsub(/"/,""); print $2 }' /etc/os-release)
+    minor=$(awk -F '=' '/^BUILD_ID/ { gsub(/"/,""); print $2 }' /etc/os-release)
+    patch=$(awk -F '=' '/^BUILD_ID/ {  gsub(/"/,""); print $2 }' /etc/os-release)
   
   else
     echo 'System is Based on Arch Linux But NO Release Info Was Found in "/etc/os-release"!'
@@ -225,9 +225,9 @@ identify_alpine(){
   
   if [ -f "/etc/os-release" ]; then
     # Tested
-    name=$(cat /etc/os-release | sed 's/"//g' | awk -F '[= ]' '/^NAME=/ { print $2 }')
-    major=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $2 }')
-    minor=$(cat /etc/os-release | sed 's/"//g' | awk -F '[=. ]' '/^VERSION_ID=/ { print $3 }')
+    name=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+    major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+    minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
     patch='n/a'
   
   else
@@ -240,27 +240,27 @@ identify_alpine(){
 # Use PKG Manager Trigger Identification Process
 identify_pkg_manager
 
-if [[ "$pkg_manager" == "apt" ]]; then
+if [ "$pkg_manager" = "apt" ]; then
   identify_deb
   print_output
 
-elif [[ "$pkg_manager" == "yum" ]]; then
+elif [ "$pkg_manager" = "yum" ]; then
   identify_rhl
   print_output
 
-elif [[ "$pkg_manager" == "zypper" ]]; then
+elif [ "$pkg_manager" = "zypper" ]; then
   identify_suse
   print_output
 
-elif [[ "$pkg_manager" == "pkg" ]]; then
+elif [ "$pkg_manager" = "pkg" ]; then
   identify_freebsd
   print_output
 
-elif [[ "$pkg_manager" == "apk" ]]; then
+elif [ "$pkg_manager" = "apk" ]; then
   identify_alpine
   print_output
 
-elif [[ "$pkg_manager" == "pacman" ]]; then
+elif [ "$pkg_manager" = "pacman" ]; then
   identify_arch
   print_output
 
