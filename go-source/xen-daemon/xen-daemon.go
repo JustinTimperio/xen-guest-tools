@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	LoggerName           string = "xe-daemon"
+	LoggerName           string = "xen-daemon"
 	DivisorOne           int    = 1
 	DivisorTwo           int    = 2
 	DivisorLeastMultiple int    = 2 // The least common multiple, ensure every collector done before executing InvalidCacheFlush.

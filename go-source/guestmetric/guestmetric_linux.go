@@ -22,7 +22,7 @@ type Collector struct {
 
 func (c *Collector) CollectOS() (GuestMetric, error) {
 	current := make(GuestMetric, 0)
-	f, err := os.OpenFile("/var/cache/xe-linux-distribution", os.O_RDONLY, 0666)
+	f, err := os.OpenFile("/var/cache/xen-identify-distribution", os.O_RDONLY, 0555)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +58,7 @@ func (c *Collector) CollectMisc() (GuestMetric, error) {
 
 func (c *Collector) CollectMemory() (GuestMetric, error) {
 	current := make(GuestMetric, 0)
-	f, err := os.OpenFile("/proc/meminfo", os.O_RDONLY, 0666)
+	f, err := os.OpenFile("/proc/meminfo", os.O_RDONLY, 0444)
 	if err != nil {
 		return nil, err
 	}
