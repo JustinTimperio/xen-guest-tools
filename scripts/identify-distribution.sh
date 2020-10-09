@@ -32,12 +32,19 @@
 # ======================================
 
 print_output(){
-  echo "Distro_Name=$name"
-  echo "Package_Manager=$pkg_manager"
-  echo "Kernel=$kernel"
-  echo "Major=$major"
-  echo "Minor=$minor" 
-  echo "Patch=$patch"
+  echo "os_distro=$distro"
+  echo "os_majorver=$major"
+  echo "os_minorver=$minor"
+  echo "os_uname=$kernel"
+  echo "os_name=$name"
+  echo "os_patch=$patch"
+
+  # echo "=$name"
+  # echo "Package_Manager=$pkg_manager"
+  # echo "Kernel=$kernel"
+  # echo "Major=$major"
+  # echo "Minor=$minor" 
+  # echo "Patch=$patch"
 }
 
 
@@ -83,27 +90,30 @@ identify_deb(){
   kernel=$(uname -r | awk -F '[-]' '{print $1}')
   
   if [ -f "/etc/os-release" ]; then
-    name=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+    distro=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print tolower($2) }' /etc/os-release)
 
-    if [ $name = "Ubuntu" ]; then
+    if [ "$distro" = "ubuntu" ]; then
       # Tested
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       major=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       minor=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
       patch=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $4 }' /etc/os-release)
 
-    elif [ $name = "Debian" ]; then
+    elif [ "$distro" = "debian" ]; then
       # Tested
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       major=$(head -1 /etc/debian_version | awk -F '[=.]' '{ gsub(/"/,""); print $1 }')
       minor=$(head -1 /etc/debian_version | awk -F '[=.]' '{ gsub(/"/,""); print $2 }')
       patch='n/a'
 
-    elif [ $name = "Kali" ]; then
+    elif [ "$distro" = "kali" ]; then
       # Tested
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       major=$(awk -F '[=.]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       minor=$(awk -F '[=.]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
       patch='n/a'
     
-    elif [ $name = "Parrot" ]; then
+    elif [ "$distro" = "Parrot" ]; then
       # Un-Tested
       major='n/a'
       minor='n/a'
@@ -127,28 +137,32 @@ identify_rhl(){
   kernel=$(uname -r | awk -F '[-]' '{print $1}')
   
   if [ -f "/etc/os-release" ]; then
-    name=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+    distro=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print tolower($2) }' /etc/os-release)
     
-    if [ $name = "Fedora" ]; then
+    if [ "$distro" = "fedora" ]; then
       # Tested
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       major=$(awk -F '[= ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       minor='n/a'
       patch='n/a'
     
-    elif [ $name = "CentOS" ]; then
+    elif [ "$distro" = "centos" ]; then
       # Tested
-      major=$(awk -F '[. ]' '{ gsub(/"/,""); print $4 }' /etc/centos-release)
-      minor=$(awk -F '[. ]' '{ gsub(/"/,""); print $5 }' /etc/centos-release)
-      patch=$(awk -F '[. ]' '{ gsub(/"/,""); print $6 }' /etc/centos-release)
+      name=$(cat /etc/centos-release)
+      major=$(grep -o '[0-9]\+' /etc/centos-release | sed -n '1p')
+      minor=$(grep -o '[0-9]\+' /etc/centos-release | sed -n '2p')
+      patch=$(grep -o '[0-9]\+' /etc/centos-release | sed -n '3p')
 
-    elif [ $name = "Oracle" ]; then
+    elif [ "$distro" = "oracle" ]; then
       # Tested
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       major=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       minor=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
       patch='n/a'
     
-    elif [ $name = "RedHat" ]; then
+    elif [ "$distro" = "redhat" ]; then
       # Un-Tested
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       major='n/a'
       minor='n/a'
       patch='n/a'
@@ -165,22 +179,25 @@ identify_suse(){
   kernel=$(uname -r | awk -F '[-]' '{print $1}')
   
   if [ -f "/etc/os-release" ]; then
-    name=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
+    distro=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print tolower($3) }' /etc/os-release)
     
-    if [ $name = "Leap" ]; then
+    if [ "$distro" = "leap" ]; then
       # Tested
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
       patch='n/a'
 
-    elif [ $name = "Tumbleweed" ]; then
+    elif [ "$distro" = "tumbleweed" ]; then
       # Tested
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       major=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release | rev | cut -c5- | rev)
       minor=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release | cut -c5- | rev | cut -c3- | rev)
       patch=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release | cut -c7-)
 
-    elif [ $name = "SLES" ]; then
+    elif [ "$distro" = "sles" ]; then
       # Un-Tested
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
       minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
       patch='n/a'
@@ -198,6 +215,7 @@ identify_arch(){
   
   if [ -f "/etc/os-release" ]; then
     # Tested
+    distro="arch"
     name=$(awk -F '=' '/^NAME/ { gsub(/"/,""); print $2 }' /etc/os-release)
     major=$(awk -F '=' '/^BUILD_ID/ { gsub(/"/,""); print $2 }' /etc/os-release)
     minor=$(awk -F '=' '/^BUILD_ID/ { gsub(/"/,""); print $2 }' /etc/os-release)
@@ -212,8 +230,9 @@ identify_arch(){
 
 identify_freebsd(){
   # Tested
-  kernel=$(uname -K)
-  name=$(uname)
+  kernel=$(uname -r)
+  distro=$(uname)
+  name="$(uname) $(uname -r)"
   major=$(uname -r | awk -F '[.-]' '{ print $1 }')
   minor=$(uname -r | awk -F '[.-]' '{ print $2 }')
   patch='n/a'
@@ -225,7 +244,8 @@ identify_alpine(){
   
   if [ -f "/etc/os-release" ]; then
     # Tested
-    name=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+    distro=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print tolower($2) }' /etc/os-release)
+    name=$(awk -F '=' '/^PRETTY_NAME=/{ print $2 }' /etc/os-release)
     major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
     minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
     patch='n/a'
