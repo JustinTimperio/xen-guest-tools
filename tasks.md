@@ -1,3 +1,5 @@
+[Chat with us on Gitter](https://gitter.im/xen-guest-tools/Development#)
+
 
 ## Go-Source
 
@@ -6,11 +8,58 @@
 - [ ] Can the source files be restructured so there are NOT multiple files with the same name?
 - [ ] Can the source files be merged into a single core `/go-source` folder?
 - [ ] Does the FreeBSD and Alpine forks use different/modified source code?
+- [ ] Add case exceptions for issues reported by gosec [here](https://github.com/JustinTimperio/xen-guest-tools/issues/1).
+
+## Sysfs
+- [ ] Finish modifing `xen-guest-tools.init`
+- [ ] Finish modifing `xen-guest-tools.service`
+- [ ] Attempt to standardize file locations across distros
 
 ## Build Process
-- [ ] Add things here
-- [ ] Add things here
-- [ ] Add things here
-- [ ] Add things here
-- [ ] Add things here
-- [ ] Add things here
+- [ ] Finish and test `makefile`
+- [ ] Create automated Go source code tests
+- [x] Create automated security check
+- [ ] Add `pacman` package build process
+- [ ] Add `deb` package build process
+- [ ] Add `rpm` package build process
+- [ ] Add `pkg` package build process
+- [ ] Add `apk` package build process
+
+## Install Scripts
+- [x] Create automated test for `identify-distribution.sh`
+- [ ] Rewrite `iso-install.sh`
+- [ ] Write `net-install.sh`
+
+## Manually Test Guest Tools
+
+- [ ] Test Ubuntu 16.04
+- [ ] Test Ubuntu 18.04
+- [ ] Test Ubuntu 20.04
+- [ ] Test Debian 9
+- [ ] Test Debian 10
+- [ ] Test Kali Linux
+- [ ] Test ParrotOS
+
+- [ ] Test RHEL 7
+- [ ] Test RHEL 8
+- [ ] Test CentOS 7
+- [ ] Test CentOS 8
+- [ ] Test Fedora 30
+- [ ] Test Fedora 31
+- [ ] Test Fedora 32
+- [ ] Test Oracle Linux 8
+
+- [ ] Test OpenSUSE Leap 15
+- [ ] Test OpenSUSE TumbleWeed
+- [ ] Test SLES 12
+- [ ] Test SLES 15
+
+- [ ] Test Arch Linux 
+
+- [ ] Test Alpine Linux 3.10
+- [ ] Test Alpine Linux 3.11
+- [ ] Test Alpine Linux 3.12
+- [ ] Test Alpine Linux 3.13
+
+- [ ] Test FreeBSD 11
+- [ ] Test FreeBSD 12

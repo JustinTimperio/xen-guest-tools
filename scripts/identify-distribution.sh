@@ -29,6 +29,20 @@
 #    - FreeBSD 11-12
 # ======================================
 
+# Allow For Manual Spesification of $release_file File For Testing
+if [ -z $1 ]; then
+  release_file="$release_file"
+else
+  release_file=$1
+fi
+
+# Allow For Manual Spesification of Alternate Release File For Testing
+if [ -z $2 ]; then
+  alt_release_file="NONE"
+else
+  alt_release_file=$2
+fi
+
 
 if [ "$(uname)" = "FreeBSD" ]; then
   kernel=$(uname -r)
@@ -39,103 +53,109 @@ if [ "$(uname)" = "FreeBSD" ]; then
   patch='n/a'
 
 elif [ "$(uname)" = "Linux" ]; then
-  distro=$(awk -F'[= ]' '/^NAME=/{ gsub(/"/,""); print tolower($2)}' /etc/os-release)
+  distro=$(awk -F'[= ]' '/^NAME=/{ gsub(/"/,""); print tolower($2)}' $release_file)
   kernel=$(uname -r)
 
   case $distro in
     "arch")
-      name=$(awk -F '=' '/^NAME/ { gsub(/"/,""); print $2 }' /etc/os-release)
-      major=$(awk -F '=' '/^BUILD_ID/ { gsub(/"/,""); print $2 }' /etc/os-release)
-      minor=$(awk -F '=' '/^BUILD_ID/ { gsub(/"/,""); print $2 }' /etc/os-release)
-      patch=$(awk -F '=' '/^BUILD_ID/ {  gsub(/"/,""); print $2 }' /etc/os-release)
+      name=$(awk -F '=' '/^NAME/ { gsub(/"/,""); print $2 }' $release_file)
+      major=$(awk -F '=' '/^BUILD_ID/ { gsub(/"/,""); print $2 }' $release_file)
+      minor=$(awk -F '=' '/^BUILD_ID/ { gsub(/"/,""); print $2 }' $release_file)
+      patch=$(awk -F '=' '/^BUILD_ID/ {  gsub(/"/,""); print $2 }' $release_file)
       ;;
 
     "parrot")
-      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      major=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      minor=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
+      major=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' $release_file)
+      minor=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' $release_file)
       patch='n/a'
       ;;
 
     "ubuntu")
-      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      major=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      minor=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
-      patch=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $4 }' /etc/os-release)
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
+      major=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' $release_file)
+      minor=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' $release_file)
+      patch=$(awk -F '[=. ]' '/^VERSION=/ { gsub(/"/,"");  print $4 }' $release_file)
       ;;
 
     "debian")
-      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      major=$(head -1 /etc/debian_version | awk -F '[=.]' '{ gsub(/"/,""); print $1 }')
-      minor=$(head -1 /etc/debian_version | awk -F '[=.]' '{ gsub(/"/,""); print $2 }')
+      if [ "$alt_release_file" = "NONE" ]; then
+        alt_release_file='/etc/debian_version'
+      fi
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
+      major=$(head -1 $alt_release_file | awk -F '[=.]' '{ gsub(/"/,""); print $1 }')
+      minor=$(head -1 $alt_release_file | awk -F '[=.]' '{ gsub(/"/,""); print $2 }')
       patch='n/a'
       ;;
 
     "kali")
-      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      major=$(awk -F '[=.]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      minor=$(awk -F '[=.]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
+      major=$(awk -F '[=.]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' $release_file)
+      minor=$(awk -F '[=.]' '/^VERSION=/ { gsub(/"/,"");  print $3 }' $release_file)
       patch='n/a'
       ;;
 
     "alpine")
-      name=$(awk -F '=' '/^PRETTY_NAME=/{ print $2 }' /etc/os-release)
-      major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
+      name=$(awk -F '=' '/^PRETTY_NAME=/{ print $2 }' $release_file)
+      major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' $release_file)
+      minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' $release_file)
       patch='n/a'
       ;;
 
     "sles")
-      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
+      major=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' $release_file)
+      minor=$(awk -F '[=. ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' $release_file)
       patch='n/a'
       ;;
 
     "fedora")
-      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      major=$(awk -F '[= ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
+      major=$(awk -F '[= ]' '/^VERSION=/ { gsub(/"/,"");  print $2 }' $release_file)
       minor='n/a'
       patch='n/a'
       ;;
   
     "centos")
-      name=$(cat /etc/centos-release)
-      major=$(grep -o '[0-9]\+' /etc/centos-release | sed -n '1p')
-      minor=$(grep -o '[0-9]\+' /etc/centos-release | sed -n '2p')
-      patch=$(grep -o '[0-9]\+' /etc/centos-release | sed -n '3p')
+      if [ "$alt_release_file" = "NONE" ]; then
+        alt_release_file='/etc/centos-release'
+      fi
+      name=$(cat $alt_release_file)
+      major=$(grep -o '[0-9]\+' $alt_release_file | sed -n '1p')
+      minor=$(grep -o '[0-9]\+' $alt_release_file | sed -n '2p')
+      patch=$(grep -o '[0-9]\+' $alt_release_file | sed -n '3p')
       ;;
 
     "oracle")
-      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      major=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-      minor=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
+      major=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' $release_file)
+      minor=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' $release_file)
       patch='n/a'
       ;;
   
     "redhat")
-      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
+      name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
       major='n/a'
       minor='n/a'
       patch='n/a'
       ;;
 
     "opensuse")
-      distro=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print tolower($3) }' /etc/os-release)
+      distro=$(awk -F '[= ]' '/^NAME=/ { gsub(/"/,"");  print tolower($3) }' $release_file)
       case $distro in
         "leap")
-          name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-          major=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-          minor=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' /etc/os-release)
+          name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
+          major=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' $release_file)
+          minor=$(awk -F '[=.]' '/^VERSION_ID=/ { gsub(/"/,"");  print $3 }' $release_file)
           patch='n/a'
           distro='opensuse'
           ;;
 
         "tumbleweed")
-          name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' /etc/os-release)
-          major=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release | rev | cut -c5- | rev)
-          minor=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release | cut -c5- | rev | cut -c3- | rev)
-          patch=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' /etc/os-release | cut -c7-)
+          name=$(awk -F '=' '/^PRETTY_NAME=/ { gsub(/"/,"");  print $2 }' $release_file)
+          major=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' $release_file | rev | cut -c5- | rev)
+          minor=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' $release_file | cut -c5- | rev | cut -c3- | rev)
+          patch=$(awk -F '[= ]' '/^VERSION_ID=/ { gsub(/"/,"");  print $2 }' $release_file | cut -c7-)
           distro='opensuse'
           ;;
       esac
