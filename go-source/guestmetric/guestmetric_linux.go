@@ -208,7 +208,7 @@ func (c *Collector) CollectNetworkAddr() (GuestMetric, error) {
 }
 
 func readSysfs(filename string) (string, error) {
-	f, err := os.OpenFile(filename, os.O_RDONLY, 0666)
+	f, err := os.OpenFile(filename, os.O_RDONLY, 0444)
 	if err != nil {
 		return "", err
 	}

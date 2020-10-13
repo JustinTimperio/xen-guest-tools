@@ -11,7 +11,7 @@
 # Required-Stop:     $remote_fs
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: @BRAND_GUEST@ daemon providing host integration services
+# Short-Description: Xen guest daemon providing host integration services
 # Description:       Writes Linux distribution version information to XenStore.
 ### END INIT INFO
 
@@ -20,28 +20,29 @@ export LANG
 
 if [ -f /etc/init.d/functions ] ; then
   . /etc/init.d/functions
+
 else
   action(){
-    descr=$1 ; shift
-    cmd=$@
-    echo -n "$descr "
-    $cmd
-    ret=$?
-    if [ $ret -eq 0 ] ; then
+    descr=$1 ; shift            # Removes first var (idk why)
+    cmd=$@                      # Sets all argument string to command
+    echo -n "$descr "           # Echos the removed var (wat)
+    $cmd                        # Runs all arguments
+    ret=$?                      # Reads the command it just ran on itself from shell history
+    if [ $ret -eq 0 ] ; then    # Figures out what happend based on the output of its own self ref
       echo "OK"
     else
       echo "Failed"
     fi
-    return $ret
+    return $ret                 # Returns a raw zero or one, based on fail or pass
   }
 fi
 
-XE_LINUX_DISTRIBUTION=/usr/sbin/xe-linux-distribution
-XE_LINUX_DISTRIBUTION_CACHE=/var/cache/xe-linux-distribution
-XE_DAEMON=/usr/sbin/xe-daemon
-XE_DAEMON_PIDFILE=/var/run/xe-daemon.pid
+XEN_GUEST_INFO=/usr/sbin/xen-identify-distribution
+XEN_GUEST_INFO_CACHE=/var/cache/xen-identify-distribution
+XEN_DAEMON=/usr/sbin/xen-daemon
+XEN_DAEMON_PID=/var/run/xen-daemon.pid
 
-if [ ! -x "${XE_LINUX_DISTRIBUTION}" ] ; then
+if [ ! -x "${XEN_GUEST_INFO}" ] ; then
     exit 0
 fi
 
@@ -63,29 +64,29 @@ start(){
     exit 0
   fi
 
-  action $"Detecting Linux distribution version:" ${XE_LINUX_DISTRIBUTION} ${XE_LINUX_DISTRIBUTION_CACHE}
+  action $"Detecting NIX Distribution version:" ${XEN_GUEST_INFO} ${XEN_GUEST_INFO_CACHE}
 
-  action $"Starting xe daemon: " /bin/true
-  mkdir -p $(dirname ${XE_DAEMON_PIDFILE})
+  action $"Starting xen daemon: " /bin/true
+  mkdir -p $(dirname ${XEN_DAEMON_PID})
   
-  if start-stop-daemon --start --background --exec ${XE_DAEMON} -- -p ${XE_DAEMON_PIDFILE} 1>/dev/null 2>/dev/null; then
+  if start-stop-daemon --start --background --exec ${XEN_DAEMON} -- -p ${XEN_DAEMON_PID} 1>/dev/null 2>/dev/null; then
     exit 0
   else
     # This is equivalent to daemon() in C
-    ( exec &>/dev/null ; ${XE_DAEMON} -p ${XE_DAEMON_PIDFILE} 2>/dev/null & )
+    ( exec &>/dev/null ; ${XEN_DAEMON} -p ${XEN_DAEMON_PID} 2>/dev/null & )
   fi
 }
 
 stop(){
-  [ ! -f "${XE_DAEMON_PIDFILE}" ] && return 0
-  action $"Stopping xe daemon: "   kill -TERM $(cat ${XE_DAEMON_PIDFILE})
-  rm -f "${XE_DAEMON_PIDFILE}"
+  [ ! -f "${XEN_DAEMON_PID}" ] && return 0
+  action $"Stopping xe daemon: "   kill -TERM $(cat ${XEN_DAEMON_PID})
+  rm -f "${XEN_DAEMON_PID}"
   return 0
 }
 
 status()
 {
-  cat ${XE_LINUX_DISTRIBUTION_CACHE}
+  cat ${XEN_GUEST_INFO_CACHE}
 }
 
 # fail silently if not running xen

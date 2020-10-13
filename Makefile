@@ -15,7 +15,7 @@ endif
 REPO = $(shell pwd)
 GO_SOURCE = $(REPO)/go-source
 SCRIPTS = $(REPO)/scripts
-SYSFS = $(REPO)/build-release/sysfs
+SYSFS = $(REPO)/sysfs
 BUILD_DIR = $(REPO)/build
 GO_BUILD_DIR = $(BUILD_DIR)/gobuild
 STAGE_DIR = $(BUILD_DIR)/stage

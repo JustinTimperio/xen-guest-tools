@@ -1,0 +1,3 @@
+[submodule "scripts/nixinfo"]
+	path = scripts/nixinfo
+	url = https://github.com/JustinTimperio/nixinfo
