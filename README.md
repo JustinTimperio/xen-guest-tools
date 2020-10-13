@@ -1,5 +1,7 @@
 # Xen Guest Tools
 
+[![Join the chat at https://gitter.im/xen-guest-tools/community](https://badges.gitter.im/xen-guest-tools/community.svg)](https://gitter.im/xen-guest-tools/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 __Table of Contents__
 
 - [Why Use xen-guest-tools?]()
