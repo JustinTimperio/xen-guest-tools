@@ -31,7 +31,7 @@ print_test_results 'RHEL 7' /rhel_7/etc/os-release
 print_test_results 'Fedora 32' /fedora_32/etc/os-release
 print_test_results 'Oracle Linux 8' /oracle_linux_8/etc/os-release
 
-# SUSE Base
+# SUSE Based
 print_test_results 'Tumbleweed' /tumbleweed/etc/os-release
 print_test_results 'Leap 15' /leap_15/etc/os-release
 print_test_results 'SLES 12 SP5' /sles_12_sp5/etc/os-release

@@ -15,60 +15,106 @@
 # Description:       Writes Linux distribution version information to XenStore.
 ### END INIT INFO
 
+
 LANG="C"
 export LANG
-
-if [ -f /etc/init.d/functions ] ; then
-  . /etc/init.d/functions
-
-else
-  action(){
-    descr=$1 ; shift            # Removes first var (idk why)
-    cmd=$@                      # Sets all argument string to command
-    echo -n "$descr "           # Echos the removed var (wat)
-    $cmd                        # Runs all arguments
-    ret=$?                      # Reads the command it just ran on itself from shell history
-    if [ $ret -eq 0 ] ; then    # Figures out what happend based on the output of its own self ref
-      echo "OK"
-    else
-      echo "Failed"
-    fi
-    return $ret                 # Returns a raw zero or one, based on fail or pass
-  }
-fi
-
 XEN_GUEST_INFO=/usr/sbin/xen-identify-distribution
 XEN_GUEST_INFO_CACHE=/var/cache/xen-identify-distribution
 XEN_DAEMON=/usr/sbin/xen-daemon
 XEN_DAEMON_PID=/var/run/xen-daemon.pid
 
-if [ ! -x "${XEN_GUEST_INFO}" ] ; then
-    exit 0
+
+##################
+# Start Up Tests #
+##################
+
+# Fail If Client Is Not Running Xen
+if [ ! -d /proc/xen ]; then
+  echo "Client is Not Running as a Xen Guest!"
+  exit 1
+
+# Check If Xen Guest Info Script Is Executable
+elif [ ! -x "${XEN_GUEST_INFO}" ]; then
+  echo "'${XEN_GUEST_INFO}' is NOT executable!"
+  exit 1
+
+# Check If Xen Daemon Is Executable
+elif [ ! -x "${XEN_DAEMON}" ]; then
+  echo "'${XEN_DAEMON}' is NOT executable!"
+  exit 1
+  
+# Check If Script Is Being Run On Domain 0 
+elif [ -e /proc/xen/capabilities ] && [ grep -q control_d /proc/xen/capabilities ]; then
+  echo 'Xen Guest Tools Should NOT Be Used on Domain 0!'
+  exit 0
 fi
 
-start(){
-  if [ ! -e /proc/xen/xenbus ] ; then
-    if [ ! -d /proc/xen ] ; then
-      action $"Mounting xenfs on /proc/xen:" /bin/false
-      echo "Could not find /proc/xen directory."
-      echo "You need a post 2.6.29-rc1 kernel with CONFIG_XEN_COMPAT_XENFS=y and CONFIG_XENFS=y|m"
-      exit 1
-    else 
-      # This is needed post 2.6.29-rc1 when /proc/xen support was pushed upstream as a xen filesystem
-      action $"Mounting xenfs on /proc/xen:" mount -t xenfs none /proc/xen
+# Default to /etc/init.d/functions If It Exists 
+if [ -f /etc/init.d/functions ] ; then
+  ./etc/init.d/functions
+  return 0
+fi
+
+
+#############################
+# Run Commands With Wrapper #
+#############################
+
+action(){
+  if [ -z $1 ]; then
+    cmd=$@                              # Sets full argument string as command
+    $cmd                                # Runs the argument string
+    if [ "$?" = 0 ]; then               # Tests if command returned error
+      echo "Action Ran Successfully"
+    else
+      echo "Action Failed To Excute"
     fi
   fi
 
-  if [ -e /proc/xen/capabilities ] && grep -q control_d /proc/xen/capabilities ; then
-    # Do not want daemon in domain 0
-    exit 0
+  return $?                             # Returns a raw zero or one, based on fail or pass
+}
+
+abort(){
+  echo $1
+  echo Exiting On Failure!
+  return 1
+}
+
+
+#########################
+# Start Xen Guest Tools #
+#########################
+
+start(){
+  # Check If `xenfs` Is Already Mounted
+  if [ -e /proc/xen/xenbus ]; then
+    echo 'The XenFS is Already Mounted on /proc/xen!'
+    
+  else 
+    if [ ! -d /proc/xen ]; then
+      echo "Could NOT Find /proc/xen Directory!"
+      echo "You Need A Kernel Greater Than 2.6.29 WITH 'CONFIG_XEN_COMPAT_XENFS=y' and 'CONFIG_XENFS=y|m' Enabled!"
+      exit 1
+    else 
+      # This is needed post 2.6.29-rc1 when /proc/xen support was pushed upstream as a xen filesystem
+      echo "Mounting XenFS on /proc/xen..."
+      mount_status=$(action mount -t xenfs none /proc/xen)
+      if [ "${mount_status}" = "1" ]; then 
+        abort 'Cannot Continue Without Mounting XenFS Correctly!'
+      fi
+    fi
   fi
 
-  action $"Detecting NIX Distribution version:" ${XEN_GUEST_INFO} ${XEN_GUEST_INFO_CACHE}
+  echo "Detecting Distribution Information..."
+  identify_status=$(action ${XEN_GUEST_INFO} > ${XEN_GUEST_INFO_CACHE})
+  if [ "${identify_status}" = "1" ]; then 
+    abort "$XEN_GUEST_INFO Failed To Excute Correctly!"
+  fi
 
-  action $"Starting xen daemon: " /bin/true
+  echo "Starting xen-daemon..."
   mkdir -p $(dirname ${XEN_DAEMON_PID})
   
+  # IDK About This
   if start-stop-daemon --start --background --exec ${XEN_DAEMON} -- -p ${XEN_DAEMON_PID} 1>/dev/null 2>/dev/null; then
     exit 0
   else
@@ -77,38 +123,83 @@ start(){
   fi
 }
 
+
+########################
+# Stop Xen Guest Tools #
+########################
+
 stop(){
-  [ ! -f "${XEN_DAEMON_PID}" ] && return 0
-  action $"Stopping xe daemon: "   kill -TERM $(cat ${XEN_DAEMON_PID})
-  rm -f "${XEN_DAEMON_PID}"
-  return 0
+  if [ ! -f "${XEN_DAEMON_PID}" ]; then
+    echo 'The xen-daemon Is NOT Running!'
+    return 0
+  else
+    echo "Stopping xen-daemon..."
+    kill_status=$(action kill -TERM $(cat ${XEN_DAEMON_PID}))
+    
+    sleep 5
+    if ! ps -p ${XEN_DAEMON_PID}; then
+      echo "The xen-daemon Refused to Close. Force Killing it Now..."
+      kill_status=$(action kill -KILL $(cat ${XEN_DAEMON_PID}))
+    fi
+
+    rm -f "${XEN_DAEMON_PID}"
+    return 0
+  fi
 }
 
-status()
-{
-  cat ${XEN_GUEST_INFO_CACHE}
+
+###############################
+# Show Xen Guest Tools Status #
+###############################
+
+status(){
+  # Show User the Running Xen-Daemon PID
+  if [ ! -f "${XEN_DAEMON_PID}" ]; then
+    echo 'Xen-Daemon Is NOT Running!'
+    return
+  else
+    echo "Xen-Daemon is Running on PID: $(cat ${XEN_DAEMON_PID})"
+  fi
+  
+  # Prints Info Detected By $XEN_GUEST_INFO
+  if [ ! -f "${XEN_GUEST_INFO_CACHE}" ]; then
+    echo "${XEN_GUEST_INFO_CACHE} Did NOT Excute Correctly!"
+  else
+    echo "Xen-Guest-Tools Identified the Following System Information:"
+    echo "------------------------------------------------------------"
+    cat ${XEN_GUEST_INFO_CACHE}
+    echo "------------------------------------------------------------"
+  fi
 }
 
-# fail silently if not running xen
-if [ ! -d /proc/xen ]; then
- exit
-fi
+
+##############################
+# Parse Xen Guest Tools Args #
+##############################
 
 case "$1" in
   start)
-    start   ;;
+    start 
+    ;;
+  
   stop)
-    stop    ;;
+    stop 
+    ;;
+  
   status)
-    status  ;;
+    status
+    ;;
+  
   force-reload|restart)
     stop
     start
     ;;
+  
   *)
     # do not advertise unreasonable commands that there is no reason
     echo $"Usage: $0 start|restart|status"
     exit 1
+    ;;
 esac
 
 exit $?
