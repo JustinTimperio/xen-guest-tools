@@ -135,8 +135,8 @@ stop(){
   else
     echo "Stopping xen-daemon..."
     kill_status=$(action kill -TERM $(cat ${XEN_DAEMON_PID}))
-    
     sleep 5
+
     if ! ps -p ${XEN_DAEMON_PID}; then
       echo "The xen-daemon Refused to Close. Force Killing it Now..."
       kill_status=$(action kill -KILL $(cat ${XEN_DAEMON_PID}))

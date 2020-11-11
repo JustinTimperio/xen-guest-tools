@@ -1,0 +1,2 @@
+rm_conffile /etc/init/xe-cloud.conf 7.10.0-0ubuntu1~ xe-guest-utilities
+rm_conffile /etc/init/xe-daemon.conf 7.10.0-0ubuntu1~ xe-guest-utilities

@@ -1,0 +1,40 @@
+# Contributor: Ian Bashford <ianbashford@gmail.com>
+# Maintainer: Ian Bashford <ianbashford@gmail.com>
+pkgname=xe-guest-utilities
+pkgver=7.20.0
+pkgrel=0
+pkgdesc="XenServer guest tools"
+url="https://github.com/xenserver/xe-guest-utilities"
+arch="x86 x86_64 aarch64"
+license="BSD-2-Clause"
+makedepends="go udev"
+subpackages="$pkgname-udev:udev:noarch $pkgname-openrc"
+options="!check"
+source="$pkgname-$pkgver.tar.gz::https://github.com/xenserver/xe-guest-utilities/archive/v$pkgver.tar.gz
+	$pkgname.initd
+	detect_distribution.patch
+	"
+
+build() {
+	go get golang.org/x/sys/unix
+	make
+}
+
+package() {
+	mkdir -p "$pkgdir"
+	cp -ar "$builddir/build/stage/usr/" "$pkgdir/"
+	install -m755 -D "$srcdir"/$pkgname.initd "$pkgdir"/etc/init.d/$pkgname
+}
+
+udev() {
+	depends=""
+	pkgdesc="udev rules for CPU hotplugging when running as Xen DomU"
+	install_if="$pkgname=$pkgver-r$pkgrel udev"
+
+	mkdir -p "$subpkgdir"/usr/lib/udev/rules.d
+	install -Dm644 "$builddir"/build/stage/etc/udev/rules.d/*.rules -t "$subpkgdir"/usr/lib/udev/rules.d
+}
+
+sha512sums="dccfaf4d64b56290716454e82a1d8967afb12efcde126061c35deef91bf715d95ac94690047e155909510a473cdf40b53cd1ad5bad4d8466bb8135263871a9ad  xe-guest-utilities-7.20.0.tar.gz
+3e898b473f6e71ecc5b820717df0a460b31756b68f4bb9bf454df39f430e64ca5e33582c03bfea044d93f49937883fe9b6807c31dee72307750de670bfca8bcd  xe-guest-utilities.initd
+467cc529fb3b7f8496f95c472a1b5f285c063dccb694927ee1ec99ece271b85cf62d17ced7297c3f4f25f605ae96f27eecddf07514fe2f75c42dc208b70e771e  detect_distribution.patch"

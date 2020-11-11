@@ -61,8 +61,9 @@ $(DIST_DIR)/$(PACKAGE)_$(XGT_VERSION)-$(GIT_RELEASE)_$(ARCH).tgz: $(OBJECTS)
 		install -d $(STAGE_DIR)/usr/bin/ ; \
 		install -d $(STAGE_DIR)/etc/udev/rules.d/ ; \
 		install -m 755 $(SYSFS)/xen-guest-tools.init $(STAGE_DIR)/etc/init.d/xen-guest-tools ; \
-		install -m 755 $(SCRIPTS)/identify-distribution.sh $(STAGE_DIR)/usr/sbin/xen-identify-distribution ; \
 		install -m 644 $(SYSFS)/xen-vcpu-hotplug.rules $(STAGE_DIR)/etc/udev/rules.d/z10_xen-vcpu-hotplug.rules ; \
+		install -m 644 $(SYSFS)/xen-guest-tools.service $(STAGE_DIR)/etc/udev/rules.d/z10_xen-vcpu-hotplug.rules ; \
+		install -m 755 $(SCRIPTS)/identify-distribution.sh $(STAGE_DIR)/usr/sbin/xen-identify-distribution ; \
 		install -m 755 $(GO_BIN_DIR)/xen-daemon $(STAGE_DIR)/usr/sbin/xen-daemon ; \
 		install -m 755 $(GO_BIN_DIR)/xenstore $(STAGE_DIR)/usr/bin/xenstore ; \
 		ln -sf xenstore $(STAGE_DIR)/usr/bin/xenstore-read ; \

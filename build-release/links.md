@@ -1,0 +1,5 @@
+- https://code.launchpad.net/ubuntu/+source/xe-guest-utilities
+- https://github.com/alpinelinux/aports/tree/master/community/xe-guest-utilities
+- https://github.com/freebsd/freebsd-ports/tree/master/sysutils/xe-guest-utilities
+- https://src.fedoraproject.org/rpms/xe-guest-utilities-latest/tree/
+- https://aur.archlinux.org/packages/xe-guest-utilities/

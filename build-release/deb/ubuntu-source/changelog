@@ -1,0 +1,94 @@
+xe-guest-utilities (7.10.0-0ubuntu2) eoan; urgency=medium
+
+  * Set GOCACHE to a safely writeable directory, fixing ftbfs with Go 1.12+.
+    (LP: #1843767).
+  * Fix typos in Vcs-* fields in d/control. 
+
+ -- Michael Hudson-Doyle <michael.hudson@ubuntu.com>  Wed, 25 Sep 2019 09:36:13 +1200
+
+xe-guest-utilities (7.10.0-0ubuntu1) bionic; urgency=medium
+
+  * New upstream release, minor:
+    * [hwe] CP-26664: Add NET SRIOV VF IP collection (#49)
+    * note xenstore command line util is improved, but not shipped in the
+      deb package
+  * Drop upstart system jobs.
+  * Bump standards version, use debhelper for systemd jobs.
+  * Update copyright file.
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Mon, 16 Apr 2018 16:11:44 +0100
+
+xe-guest-utilities (7.4.0-0ubuntu1) artful; urgency=medium
+
+  * New upstream release:
+    - adds mac address reporting
+    - adds disk drive reporting
+  * Use actual upstream source code from github, and watch file
+  * Drop all patches, custom get-orig source, README.source, and useless
+    manpages
+  * Set Vcs-Git location
+  * Use absolute imports to support building with gccgo.
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Mon, 12 Jun 2017 18:58:24 +0100
+
+xe-guest-utilities (6.2.0-1120+dsf1-0ubuntu4) zesty; urgency=medium
+
+  * debian/xe-guest-utilities.xe-daemon.service: declare
+    DefaultDependencies=no to prevent dependency cycles. The unit cannot
+    be simultaniously before and after sysinit target. By default all
+    units are after sysinit target, yet cloud-init-local is before it. LP:
+    #1669755
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Fri, 03 Mar 2017 12:33:01 +0000
+
+xe-guest-utilities (6.2.0-1120+dsf1-0ubuntu3) xenial; urgency=medium
+
+  * upstart job: Check if /sys/hypervisor/type exists before attempting to
+    read it (LP: #1504481).
+
+ -- Ben Howard <ben.howard@ubuntu.com>  Fri, 23 Oct 2015 12:01:49 -0600
+
+xe-guest-utilities (6.2.0-1120+dsf1-0ubuntu2) wily; urgency=medium
+
+  * Drop 'depends' for cloud-init (LP: #1496730).
+
+ -- Ben Howard <ben.howard@ubuntu.com>  Thu, 17 Sep 2015 08:57:54 -0600
+
+xe-guest-utilities (6.2.0-1120+dsf1-0ubuntu1) wily; urgency=medium
+
+  [ Ben Howard ]
+  * Initial packaging/forking for usability in Ubuntu.
+    - depend on xenstore-utils rather than pre-packaged binary blobs.
+    - created systemd files
+    - created upstart files
+  * Source changes:
+    - deleted xenstore-sources.tar.bz2
+    - deleted xenstore.tar.bz2
+    - deleted apt source 'citrix.list' as both broken and unneeded
+    - deleted debian/*.{postinst,prerm} as unneeded
+    - modified debian/rules
+  * Generalized upstart/systemd descriptions.
+  * Changed systemd target for proc-xen.mounts.
+  * Fix systemd job for xe-daemon.service to use ConditionPathExists.
+  * Modernize the CPU hotplug udev rule.
+  * Closes (LP: #1459455).
+
+  [ Steve Langasek ]
+  * Adjust debian/copyright to comply with copyright-format 1.0; and fix
+    inclusion of personal copyright statement on Canonical code.
+  * Remove debian/postinst and debian/postrm that are empty except for the
+    debhelper tokens; fixes lintian warning due to ignored errors.  Let
+    debhelper create the scripts itself so it gets them right.
+  * Drop a no-op debian/docs.
+  * Rename debian/nova-agent.upstart to
+    debian/xe-guest-utilities.xe-daemon.upstart and let it be picked up
+    automatically in debian/rules.
+  * Don't make systemd vs. upstart support conditional on the target release.
+
+ -- Ben Howard <ben.howard@ubuntu.com>  Thu, 13 Aug 2015 16:28:48 -0600
+
+xe-guest-utilities (6.2.0-1120) etch; urgency=low
+
+  * Build for xenenterprise 6.2.0-70442c.
+
+ -- Citrix Systems, Inc. <www.citrix.com>  Fri, 14 Jun 2013 12:57:34 +0000
