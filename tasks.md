@@ -3,12 +3,18 @@
 
 ## Go-Source
 
-- [ ] Why is the `unsafe` package called in [system.go](https://github.com/JustinTimperio/xen-guest-tools/blob/master/go-source/system/system.go) and can it be reimplemented in a better way?
+
+General
 - [ ] What does [guestmetric_test.go](https://github.com/JustinTimperio/xen-guest-tools/blob/master/go-source/guestmetric/guestmetric_test.go) and [xenstore_test.go](https://github.com/JustinTimperio/xen-guest-tools/tree/master/go-source/xenstoreclient) test? Can they be move to `/tests` and used in a release test suite?
 - [ ] Can the source files be restructured so there are NOT multiple files with the same name?
 - [ ] Can the source files be merged into a single core `/go-source` folder?
 - [ ] Does the FreeBSD and Alpine forks use different/modified source code?
 - [ ] Add case exceptions for issues reported by gosec [here](https://github.com/JustinTimperio/xen-guest-tools/issues/1).
+
+Code Spesific
+- [ ] Why is the `unsafe` package called in [system.go](https://github.com/JustinTimperio/xen-guest-tools/blob/master/go-source/system/system.go) and can it be reimplemented in a better way?
+- [ ] [Line 53-54 system.go](https://github.com/JustinTimperio/xen-guest-tools/blob/2b300955c23bdd6752c442eecffc8e66665bc7ad/go-source/system/system.go#L53) Getting Error: 'warning| syscall.Timespec composite literal uses unkeyed fields'
+- [ ] [Line 64 syslog.go](https://github.com/JustinTimperio/xen-guest-tools/blob/2b300955c23bdd6752c442eecffc8e66665bc7ad/go-source/syslog/syslog.go#L64) Getting Error: 'warning| unreachable code'
 
 ## Sysfs
 - [ ] Finish modifing `xen-guest-tools.init`
