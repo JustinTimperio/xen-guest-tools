@@ -9,9 +9,9 @@ General
     - xenstore_test.go: Seems to be client side testing of xenstore and file perms. No reason to merge with tests 
     - guestmetric_test.go: Seems to be client side testing/benchmarking of vm "hardware" speed. No reason to merge with tests 
 - [x] Can the source files be restructured so there are NOT multiple files with the same name?
-    - Yes this was faily easy
+    - Yes this was fairly easy
 - [x] Can the source files be merged into a single core `/go-source` folder?
-    - Given the way that source file interrelate, No these files can not be merged into a master folder
+    - Given the way that source files interrelate, No these files cannot be merged into a master folder
 - [x] Does the FreeBSD and Alpine forks use different/modified source code?
     - The source code itself does not seem to be modified but it does require non-systemd init scripts. FreeBSD must also be compiled using GOOS=FreeBSD
 - [ ] Add case exceptions for issues reported by gosec [here](https://github.com/JustinTimperio/xen-guest-tools/issues/1).
