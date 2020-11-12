@@ -60,6 +60,4 @@ func (s *SysLoggerWriter) Close() error {
 	case <-time.After(waitLoggerQuitSeconds * time.Second):
 		return s.cmd.Process.Kill()
 	}
-
-	return nil
 }

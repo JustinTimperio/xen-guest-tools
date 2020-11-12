@@ -8,8 +8,10 @@ General
 - [x] What does [guestmetric_test.go](https://github.com/JustinTimperio/xen-guest-tools/blob/master/go-source/guestmetric/guestmetric_test.go) and [xenstore_test.go](https://github.com/JustinTimperio/xen-guest-tools/tree/master/go-source/xenstoreclient) test? Can they be move to `/tests` and used in a release test suite?
     - xenstore_test.go: Seems to be client side testing of xenstore and file perms. No reason to merge with tests 
     - guestmetric_test.go: Seems to be client side testing/benchmarking of vm "hardware" speed. No reason to merge with tests 
-- [ ] Can the source files be restructured so there are NOT multiple files with the same name?
-- [ ] Can the source files be merged into a single core `/go-source` folder?
+- [x] Can the source files be restructured so there are NOT multiple files with the same name?
+    - Yes this was faily easy
+- [x] Can the source files be merged into a single core `/go-source` folder?
+    - Given the way that source file interrelate, No these files can not be merged into a master folder
 - [x] Does the FreeBSD and Alpine forks use different/modified source code?
     - The source code itself does not seem to be modified but it does require non-systemd init scripts. FreeBSD must also be compiled using GOOS=FreeBSD
 - [ ] Add case exceptions for issues reported by gosec [here](https://github.com/JustinTimperio/xen-guest-tools/issues/1).
@@ -17,7 +19,9 @@ General
 Code Spesific
 - [ ] Why is the `unsafe` package called in [system.go](https://github.com/JustinTimperio/xen-guest-tools/blob/master/go-source/system/system.go) and can it be reimplemented in a better way?
 - [ ] [Line 53-54 system.go](https://github.com/JustinTimperio/xen-guest-tools/blob/2b300955c23bdd6752c442eecffc8e66665bc7ad/go-source/system/system.go#L53) Getting Error: 'warning| syscall.Timespec composite literal uses unkeyed fields'
-- [ ] [Line 64 syslog.go](https://github.com/JustinTimperio/xen-guest-tools/blob/2b300955c23bdd6752c442eecffc8e66665bc7ad/go-source/syslog/syslog.go#L64) Getting Error: 'warning| unreachable code'
+    - This error may not be resolveable. 
+- [x] [Line 64 syslog.go](https://github.com/JustinTimperio/xen-guest-tools/blob/2b300955c23bdd6752c442eecffc8e66665bc7ad/go-source/syslog/syslog.go#L64) Getting Error: 'warning| unreachable code'
+    - This was most likely a small error on the orignal devs part. It was just a unreachable `return nil` in the function that closes the `SysLoggerWriter`
 
 ## Sysfs
 - [ ] Finish modifing `xen-guest-tools.init`
