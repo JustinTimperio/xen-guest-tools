@@ -1,10 +1,10 @@
 # Define Version
-PACKAGE = xen-guest-tools
-VERSION_MAJOR=1
-VERSION_MINOR=0
-VERSION_PATCH=0
-XGT_VERSION = $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
-GIT_RELEASE := $(shell git rev-list HEAD | wc -l)
+PACKAGE 						= xen-guest-tools
+VERSION_MAJOR 			= 1
+VERSION_MINOR 			= 0
+VERSION_PATCH 			= 0
+XGT_VERSION 				= $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
+GIT_RELEASE 				:= $(shell git rev-list HEAD | wc -l)
 
 ARCH := $(shell go version|awk -F'/' '{print $$2}')
 ifeq ($(ARCH), amd64)
@@ -12,36 +12,36 @@ ifeq ($(ARCH), amd64)
 endif
 
 # Define File Locations
-REPO = $(shell pwd)
-GO_SOURCE = $(REPO)/go-source
-SCRIPTS = $(REPO)/scripts
-SYSFS = $(REPO)/sysfs
-BUILD_DIR = $(REPO)/build
-GO_BUILD_DIR = $(BUILD_DIR)/gobuild
-STAGE_DIR = $(BUILD_DIR)/stage
-GO_BIN_DIR = $(BUILD_DIR)/bins
-DIST_DIR = $(BUILD_DIR)/out
+REPO         				= $(shell pwd)
+GO_SOURCE    				= $(REPO)/go-source
+SCRIPTS      				= $(REPO)/scripts
+SYSFS        				= $(REPO)/sysfs
+BUILD_DIR    				= $(REPO)/build
+GO_BUILD_DIR 				= $(BUILD_DIR)/gobuild
+STAGE_DIR    				= $(BUILD_DIR)/stage
+GO_BIN_DIR   				= $(BUILD_DIR)/bins
+DIST_DIR     				= $(BUILD_DIR)/out
 
 # GOLANG Build Flags
-GO_BUILD = go build
-GO_FLAGS = -v
+GO_BUILD 						= go build
+GO_FLAGS 						= -v
 
 # Define GOLANG Source and Targets 
-OBJECTS :=
-OBJECTS += $(GO_BIN_DIR)/xen-daemon
-OBJECTS += $(GO_BIN_DIR)/xenstore
+OBJECTS 						:=
+OBJECTS 						+= $(GO_BIN_DIR)/xen-daemon
+OBJECTS 						+= $(GO_BIN_DIR)/xenstore
 
-XENSTORE_SOURCES :=
-XENSTORE_SOURCES += ./go-source/xenstore/xenstore.go
-XENSTORE_SOURCES += ./go-source/xenstoreclient/xenstore.go
+XENSTORE_SOURCES 		:=
+XENSTORE_SOURCES 		+= ./go-source/xenstore/xenstore.go
+XENSTORE_SOURCES 		+= ./go-source/xenstoreclient/xenstore.go
 
-XEN_DAEMON_SOURCES :=
-XEN_DAEMON_SOURCES += ./go-source/xen-daemon/xen-daemon.go
-XEN_DAEMON_SOURCES += ./go-source/syslog/syslog.go
-XEN_DAEMON_SOURCES += ./go-source/system/system.go
-XEN_DAEMON_SOURCES += ./go-source/guestmetric/guestmetric.go
-XEN_DAEMON_SOURCES += ./go-source/guestmetric/guestmetric_linux.go
-XEN_DAEMON_SOURCES += ./go-source/xenstoreclient/xenstore.go
+XEN_DAEMON_SOURCES 	:=
+XEN_DAEMON_SOURCES 	+= ./go-source/xen-daemon/xen-daemon.go
+XEN_DAEMON_SOURCES 	+= ./go-source/syslog/syslog.go
+XEN_DAEMON_SOURCES 	+= ./go-source/system/system.go
+XEN_DAEMON_SOURCES 	+= ./go-source/guestmetric/guestmetric.go
+XEN_DAEMON_SOURCES 	+= ./go-source/guestmetric/guestmetric_linux.go
+XEN_DAEMON_SOURCES 	+= ./go-source/xenstoreclient/xenstore.go
 
 
 # Stage Build Process

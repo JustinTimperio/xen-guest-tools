@@ -5,10 +5,13 @@
 
 
 General
-- [ ] What does [guestmetric_test.go](https://github.com/JustinTimperio/xen-guest-tools/blob/master/go-source/guestmetric/guestmetric_test.go) and [xenstore_test.go](https://github.com/JustinTimperio/xen-guest-tools/tree/master/go-source/xenstoreclient) test? Can they be move to `/tests` and used in a release test suite?
+- [x] What does [guestmetric_test.go](https://github.com/JustinTimperio/xen-guest-tools/blob/master/go-source/guestmetric/guestmetric_test.go) and [xenstore_test.go](https://github.com/JustinTimperio/xen-guest-tools/tree/master/go-source/xenstoreclient) test? Can they be move to `/tests` and used in a release test suite?
+    - xenstore_test.go: Seems to be client side testing of xenstore and file perms. No reason to merge with tests 
+    - guestmetric_test.go: Seems to be client side testing/benchmarking of vm "hardware" speed. No reason to merge with tests 
 - [ ] Can the source files be restructured so there are NOT multiple files with the same name?
 - [ ] Can the source files be merged into a single core `/go-source` folder?
-- [ ] Does the FreeBSD and Alpine forks use different/modified source code?
+- [x] Does the FreeBSD and Alpine forks use different/modified source code?
+    - The source code itself does not seem to be modified but it does require non-systemd init scripts. FreeBSD must also be compiled using GOOS=FreeBSD
 - [ ] Add case exceptions for issues reported by gosec [here](https://github.com/JustinTimperio/xen-guest-tools/issues/1).
 
 Code Spesific

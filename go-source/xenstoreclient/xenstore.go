@@ -195,7 +195,7 @@ func NewXenstore(tx uint32) (XenStoreClient, error) {
 		return nil, err
 	}
 
-	xbFile, err := os.OpenFile(devPath, os.O_RDWR, 0666)
+	xbFile, err := os.OpenFile(devPath, os.O_RDWR, 0600)
 	if err != nil {
 		return nil, err
 	}
