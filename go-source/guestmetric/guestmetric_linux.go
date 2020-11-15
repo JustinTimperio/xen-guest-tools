@@ -48,10 +48,10 @@ func (c *Collector) CollectMisc() (GuestMetric, error) {
 		current["control/feature-balloon"] = "0"
 	}
 	current["attr/PVAddons/Installed"] = "1"
-	current["attr/PVAddons/MajorVersion"] = "@PRODUCT_MAJOR_VERSION@"
-	current["attr/PVAddons/MinorVersion"] = "@PRODUCT_MINOR_VERSION@"
-	current["attr/PVAddons/MicroVersion"] = "@PRODUCT_MICRO_VERSION@"
-	current["attr/PVAddons/BuildVersion"] = "@NUMERIC_BUILD_NUMBER@"
+	current["attr/PVAddons/MajorVersion"] = "@VERSION_MAJOR@"
+	current["attr/PVAddons/MinorVersion"] = "@VERSION_MINOR@"
+	current["attr/PVAddons/MicroVersion"] = "@VERSION_PATCH@"
+	current["attr/PVAddons/BuildVersion"] = "@GIT_RELEASE@"
 
 	return current, nil
 }

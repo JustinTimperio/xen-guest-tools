@@ -2,12 +2,12 @@
 
 # Alpine Linux
 
-XE_LINUX_DISTRIBUTION=/usr/sbin/xe-linux-distribution
-XE_LINUX_DISTRIBUTION_CACHE=/var/cache/xe-linux-distribution
-XE_DAEMON=/usr/sbin/xe-daemon
-XE_DAEMON_PIDFILE=/var/run/xe-daemon.pid
+XEN_GUEST_INFO=/usr/sbin/xen-identify-distribution
+XEN_GUEST_INFO_CACHE=/var/cache/xen-identify-distribution
+XEN_DAEMON=/usr/sbin/xen-daemon
+XEN_DAEMON_PID=/var/run/xen-daemon.pid
 
-name=xe-daemon
+name=xen-daemon
 daemon=/usr/sbin/$name
 
 depend() {
@@ -21,7 +21,7 @@ start() {
 	fi
 
 	ebegin "Detecting Linux distribution version"
-		${XE_LINUX_DISTRIBUTION} ${XE_LINUX_DISTRIBUTION_CACHE}
+		${XEN_GUEST_INFO} ${XEN_GUEST_INFO_CACHE}
 	eend $?
 
 	if [ ! -e /proc/xen/xenbus ] ; then
@@ -35,8 +35,8 @@ start() {
 	fi
 
 	ebegin "Starting ${name}"
-		mkdir -p $(dirname ${XE_DAEMON_PIDFILE})
-		( exec &>/dev/null ; ${XE_DAEMON} -p ${XE_DAEMON_PIDFILE} & )
+		mkdir -p $(dirname ${XEN_DAEMON_PID})
+		( exec &>/dev/null ; ${XEN_DAEMON} -p ${XEN_DAEMON_PID} & )
 	eend $?
 }
 
@@ -46,6 +46,6 @@ stop() {
 	fi
 
 	ebegin "Stopping ${name}"
-		kill -TERM $(cat ${XE_DAEMON_PIDFILE})
+		kill -TERM $(cat ${XEN_DAEMON_PID})
 	eend $?
 }

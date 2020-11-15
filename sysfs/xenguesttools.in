@@ -14,14 +14,14 @@
 
 . /etc/rc.subr
 
-name=xenguest
-desc="Xen Guest Daemon"
-rcvar=xenguest_enable
+name=xenguestools
+desc="Xen Guest Tools Daemon"
+rcvar=xenguesttools_enable
 
 load_rc_config $name
 
-command="%%PREFIX%%/sbin/xe-daemon"
-pidfile=/var/run/xe-daemon.pid
+command="%%PREFIX%%/sbin/xen-daemon"
+pidfile=/var/run/xen-daemon.pid
 command_interpreter=/bin/sh
 command_args='-p ${pidfile} &'
 

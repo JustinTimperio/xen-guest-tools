@@ -1,96 +1,86 @@
+###
+#
+#
+#
+#
+###
+
 # Define Version
 PACKAGE 						= xen-guest-tools
 VERSION_MAJOR 			= 1
 VERSION_MINOR 			= 0
 VERSION_PATCH 			= 0
 XGT_VERSION 				= $(VERSION_MAJOR).$(VERSION_MINOR).$(VERSION_PATCH)
-GIT_RELEASE 				:= $(shell git rev-list HEAD | wc -l)
+GIT_RELEASE 				= $(shell git rev-list HEAD | wc -l)
 
-ARCH := $(shell go version|awk -F'/' '{print $$2}')
-ifeq ($(ARCH), amd64)
-	ARCH = x86_64
-endif
-
-# Define File Locations
+# Define Repo Folder Locations
 REPO         				= $(shell pwd)
 GO_SOURCE    				= $(REPO)/go-source
 SCRIPTS      				= $(REPO)/scripts
 SYSFS        				= $(REPO)/sysfs
 BUILD_DIR    				= $(REPO)/build
-GO_BUILD_DIR 				= $(BUILD_DIR)/gobuild
+
+# Define Build Folder Locations
 STAGE_DIR    				= $(BUILD_DIR)/stage
-GO_BIN_DIR   				= $(BUILD_DIR)/bins
 DIST_DIR     				= $(BUILD_DIR)/out
 
 # GOLANG Build Flags
 GO_BUILD 						= go build
 GO_FLAGS 						= -v
 
-# Define GOLANG Source and Targets 
-OBJECTS 						:=
-OBJECTS 						+= $(GO_BIN_DIR)/xen-daemon
-OBJECTS 						+= $(GO_BIN_DIR)/xenstore
 
-XENSTORE_SOURCES 		:=
-XENSTORE_SOURCES 		+= ./go-source/xenstore/xenstore.go
-XENSTORE_SOURCES 		+= ./go-source/xenstoreclient/xenstore.go
+# Figure Out Arch of System
+ARCH := $(shell go version | awk -F '[/]' '{print $$2}')
+ifeq ($(ARCH), amd64)
+	ARCH = x86_64
+endif
 
-XEN_DAEMON_SOURCES 	:=
-XEN_DAEMON_SOURCES 	+= ./go-source/xen-daemon/xen-daemon.go
-XEN_DAEMON_SOURCES 	+= ./go-source/syslog/syslog.go
-XEN_DAEMON_SOURCES 	+= ./go-source/system/system.go
-XEN_DAEMON_SOURCES 	+= ./go-source/guestmetric/guestmetric.go
-XEN_DAEMON_SOURCES 	+= ./go-source/guestmetric/guestmetric_linux.go
-XEN_DAEMON_SOURCES 	+= ./go-source/xenstoreclient/xenstore.go
-
-
-# Stage Build Process
-.PHONY: build
-build: $(DIST_DIR)/$(PACKAGE)_$(XGT_VERSION)-$(GIT_RELEASE)_$(ARCH).tgz
-
-.PHONY: clean
-clean:
-	$(RM) -rf $(BUILD_DIR)
-
-
-# Build Tarball
-$(DIST_DIR)/$(PACKAGE)_$(XGT_VERSION)-$(GIT_RELEASE)_$(ARCH).tgz: $(OBJECTS)
-		(mkdir -p $(DIST_DIR) ; \
-		install -d $(STAGE_DIR)/etc/init.d/ ; \
-		install -d $(STAGE_DIR)/usr/sbin/ ; \
-		install -d $(STAGE_DIR)/usr/bin/ ; \
-		install -d $(STAGE_DIR)/etc/udev/rules.d/ ; \
-		install -m 755 $(SYSFS)/xen-guest-tools.init $(STAGE_DIR)/etc/init.d/xen-guest-tools ; \
-		install -m 644 $(SYSFS)/xen-vcpu-hotplug.rules $(STAGE_DIR)/etc/udev/rules.d/z10_xen-vcpu-hotplug.rules ; \
-		install -m 644 $(SYSFS)/xen-guest-tools.service $(STAGE_DIR)/etc/udev/rules.d/z10_xen-vcpu-hotplug.rules ; \
-		install -m 755 $(SCRIPTS)/identify-distribution.sh $(STAGE_DIR)/usr/sbin/xen-identify-distribution ; \
-		install -m 755 $(GO_BIN_DIR)/xen-daemon $(STAGE_DIR)/usr/sbin/xen-daemon ; \
-		install -m 755 $(GO_BIN_DIR)/xenstore $(STAGE_DIR)/usr/bin/xenstore ; \
-		ln -sf xenstore $(STAGE_DIR)/usr/bin/xenstore-read ; \
-		ln -sf xenstore $(STAGE_DIR)/usr/bin/xenstore-write ; \
-		ln -sf xenstore $(STAGE_DIR)/usr/bin/xenstore-exists ; \
-		ln -sf xenstore $(STAGE_DIR)/usr/bin/xenstore-rm ; \
-		ln -sf xenstore $(STAGE_DIR)/usr/bin/xenstore-list ; \
-		ln -sf xenstore $(STAGE_DIR)/usr/bin/xenstore-ls ; \
-		ln -sf xenstore $(STAGE_DIR)/usr/bin/xenstore-chmod ; \
-		ln -sf xenstore $(STAGE_DIR)/usr/bin/xenstore-watch ; \
-		cd $(STAGE_DIR) ; \
-		tar zcf $@ * )
-
-
-$(GO_BIN_DIR)/xen-daemon: $(XEN_DAEMON_SOURCES:%=$(GO_BUILD_DIR)/%)
-	mkdir -p $(GO_BIN_DIR)
-	$(GO_BUILD) $(GO_FLAGS) -o $@ $<
-
-$(GO_BIN_DIR)/xenstore: $(XENSTORE_SOURCES:%=$(GO_BUILD_DIR)/%) $(GOROOT)
-	mkdir -p $(GO_BIN_DIR)
-	$(GO_BUILD) $(GO_FLAGS) -o $@ $<
-
-$(GO_BUILD_DIR)/%: $(REPO)/%
-	mkdir -p $$(dirname $@)
-	cat $< | \
+# Add Function That Adds Version To Source Files
+define add_version
+	cat $(1) | \
 	sed -e "s/@VERSION_MAJOR@/$(VERSION_MAJOR)/g" | \
 	sed -e "s/@VERSION_MINOR@/$(VERSION_MINOR)/g" | \
 	sed -e "s/@VERSION_PATCH@/$(VERSION_PATCH)/g" | \
-	sed -e "s/@GIT_RELEASE@/$(GIT_RELEASE)/g" \
-	> $@
+	sed -e "s/@GIT_RELEASE@/$(GIT_RELEASE)/g" > $(2)
+endef
+
+
+all: prebuild
+	# Build XenStore
+	GOOS=linux $(GO_BUILD) $(GO_FLAGS) -o $(DIST_DIR)/xenstore_linux_v$(XGT_VERSION) $(STAGE_DIR)/xenstore/xenstore.go
+	GOOS=freebsd $(GO_BUILD) $(GO_FLAGS) -o $(DIST_DIR)/xenstore_freebsd_v$(XGT_VERSION) $(STAGE_DIR)/xenstore/xenstore.go
+	# Build Xen-Daemon
+	GOOS=linux $(GO_BUILD) $(GO_FLAGS) -o $(DIST_DIR)/xen-daemon_linux_v$(XGT_VERSION) $(STAGE_DIR)/xen-daemon/xen-daemon.go
+	GOOS=freebsd $(GO_BUILD) $(GO_FLAGS) -o $(DIST_DIR)/xen-daemon_freebsd_v$(XGT_VERSION) $(STAGE_DIR)/xen-daemon/xen-daemon.go
+
+
+prebuild:
+	# Clean Previous Run and Make Dirs
+	rm -rf $(BUILD_DIR)
+	mkdir $(BUILD_DIR)
+	mkdir $(STAGE_DIR)
+	mkdir $(STAGE_DIR)/xenstore
+	mkdir $(STAGE_DIR)/xenstoreclient
+	mkdir $(STAGE_DIR)/syslog
+	mkdir $(STAGE_DIR)/system
+	mkdir $(STAGE_DIR)/xen-daemon
+	mkdir $(STAGE_DIR)/guestmetric
+	mkdir $(DIST_DIR)
+	mkdir $(DIST_DIR)/sysfs
+	# Copy Sysfs Files
+	cp $(SCRIPTS)/identify-distribution.sh $(DIST_DIR)/sysfs/identify-distribution
+	cp $(SYSFS)/xen-guest-tools.init $(DIST_DIR)/sysfs/xen-guest-tools.init
+	cp $(SYSFS)/xen-guest-tools.initd $(DIST_DIR)/sysfs/xen-guest-tools.initd
+	cp $(SYSFS)/xenguesttools.in $(DIST_DIR)/sysfs/xenguesttools.in
+	cp $(SYSFS)/xen-guest-tools.service $(DIST_DIR)/sysfs/xen-guest-tools.service
+	cp $(SYSFS)/xen-vcpu-hotplug.rules $(DIST_DIR)/sysfs/xen-vcpu-hotplug.rules
+	cp $(REPO)/LICENSE $(DIST_DIR)/LICENSE
+	cp $(REPO)/LICENSE_Citrix $(DIST_DIR)/LICENSE_Citrix
+	# Copy Source Go Files
+	$(call add_version,$(GO_SOURCE)/xenstore/xenstore.go,$(STAGE_DIR)/xenstore/xenstore.go)
+	$(call add_version,$(GO_SOURCE)/xenstoreclient/xenstoreclient.go,$(STAGE_DIR)/xenstoreclient/xenstoreclient.go)
+	$(call add_version,$(GO_SOURCE)/syslog/syslog.go,$(STAGE_DIR)/syslog/syslog.go)
+	$(call add_version,$(GO_SOURCE)/system/system.go,$(STAGE_DIR)/system/system.go)
+	$(call add_version,$(GO_SOURCE)/xen-daemon/xen-daemon.go,$(STAGE_DIR)/xen-daemon/xen-daemon.go)
+	$(call add_version,$(GO_SOURCE)/guestmetric/guestmetric.go,$(STAGE_DIR)/guestmetric/guestmetric.go)
+	$(call add_version,$(GO_SOURCE)/guestmetric/guestmetric_linux.go,$(STAGE_DIR)/guestmetric/guestmetric_linux.go)
